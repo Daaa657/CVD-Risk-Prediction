@@ -15,7 +15,7 @@ from sklearn.metrics import confusion_matrix, roc_curve
 plt.rcParams["font.family"] = ["SimHei"]
 plt.rcParams["axes.unicode_minus"] = False
 
-# ===================== 1. 读取数据集 =====================
+#  1. 读取数据集 
 df = pd.read_csv("../data/framingham_heart_study.csv")
 print("数据集整体尺寸：", df.shape)
 print("\n各字段缺失值统计：")
@@ -25,7 +25,7 @@ print(df["TenYearCHD"].value_counts(normalize=True))
 print("\n数据描述性统计：")
 print(df.describe())
 
-# ===================== 2. 缺失值填充处理 =====================
+# 2. 缺失值填充处理 
 num_cols = ["cigsPerDay", "totChol", "BMI", "heartRate", "glucose"]
 cat_cols = ["education", "BPMeds"]
 # 数值特征均值填充
