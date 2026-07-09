@@ -1,4 +1,4 @@
-# 导入全部依赖库
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -10,7 +10,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
 from sklearn.metrics import confusion_matrix, roc_curve
 
-# 解决VSCode绘图中文乱码（必加）
+# 解决VSCode绘图中文乱码
 # 替换原来的两行字体代码
 plt.rcParams["font.family"] = ["SimHei"]
 plt.rcParams["axes.unicode_minus"] = False
@@ -35,13 +35,13 @@ for col in num_cols:
 for col in cat_cols:
     df[col].fillna(df[col].mode()[0], inplace=True)
 
-# ===================== 3. 医学逻辑过滤异常值 =====================
+# 3. 医学逻辑过滤异常值
 df = df[(df["sysBP"] > 0) & (df["diaBP"] > 0)]
 df = df[(df["BMI"] > 10) & (df["BMI"] < 60)]
 df = df[(df["heartRate"] >= 30) & (df["heartRate"] <= 220)]
 print(f"\n异常值清洗后剩余样本量：{df.shape[0]}")
 
-# ===================== 4. EDA可视化分析 =====================
+#4. EDA可视化分析
 # 4.1 特征相关性热力图
 plt.figure(figsize=(12, 10))
 corr = df.corr()
@@ -62,7 +62,7 @@ plt.tight_layout()
 plt.savefig("boxplot.png", dpi=300)
 plt.show()
 
-# ===================== 5. 特征工程 & 数据集划分 =====================
+#5. 特征工程 & 数据集划分
 # 分离特征与标签
 X = df.drop("TenYearCHD", axis=1)
 y = df["TenYearCHD"]
@@ -74,7 +74,7 @@ X_train, X_test, y_train, y_test = train_test_split(
     X_scaled, y, test_size=0.3, random_state=42, stratify=y
 )
 
-# ===================== 6. 模型1：逻辑回归 + 5折交叉验证 =====================
+# 6. 模型1：逻辑回归 + 5折交叉验证
 lr = LogisticRegression(max_iter=1000)
 # 5折交叉验证评估AUC稳定性
 cv_auc_lr = cross_val_score(lr, X_train, y_train, cv=5, scoring="roc_auc")
@@ -84,7 +84,7 @@ lr.fit(X_train, y_train)
 y_pred_lr = lr.predict(X_test)
 y_proba_lr = lr.predict_proba(X_test)[:, 1]
 
-# ===================== 7. 模型2：随机森林 + GridSearch网格调参 =====================
+# 7. 模型2：随机森林 + GridSearch网格调参 
 rf = RandomForestClassifier(random_state=42)
 # 超参数搜索空间
 param_grid = {
@@ -100,7 +100,7 @@ rf_best = grid_search.best_estimator_
 y_pred_rf = rf_best.predict(X_test)
 y_proba_rf = rf_best.predict_proba(X_test)[:, 1]
 
-# ===================== 8. 模型评估指标计算 =====================
+#  8. 模型评估指标计算 
 def get_eval_metrics(y_true, y_pred, y_proba):
     acc = round(accuracy_score(y_true, y_pred), 4)
     precision = round(precision_score(y_true, y_pred), 4)
@@ -119,7 +119,7 @@ print(f"{'评估指标':<16}{'逻辑回归':<12}{'最优随机森林':<12}")
 for idx, name in enumerate(metrics_name):
     print(f"{name:<16}{lr_result[idx]:<12}{rf_result[idx]:<12}")
 
-# ===================== 9. 随机森林混淆矩阵 =====================
+# 9. 随机森林混淆矩阵 
 plt.figure(figsize=(6, 5))
 cm = confusion_matrix(y_test, y_pred_rf)
 sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
@@ -129,7 +129,7 @@ plt.title("随机森林混淆矩阵")
 plt.savefig("confusion_matrix.png", dpi=300)
 plt.show()
 
-# ===================== 10. ROC曲线对比 =====================
+#  10. ROC曲线对比 
 fpr_lr, tpr_lr, _ = roc_curve(y_test, y_proba_lr)
 fpr_rf, tpr_rf, _ = roc_curve(y_test, y_proba_rf)
 
@@ -144,7 +144,7 @@ plt.legend()
 plt.savefig("roc_curve.png", dpi=300)
 plt.show()
 
-# ===================== 11. 特征重要性排序图 =====================
+#  11. 特征重要性排序图 
 feature_names = X.columns
 feature_importance = rf_best.feature_importances_
 # 按重要性降序排序
